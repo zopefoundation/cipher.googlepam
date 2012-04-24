@@ -1,4 +1,3 @@
-=================
 Google PAM Module
 =================
 
@@ -20,7 +19,7 @@ The code was inspired by the ``python_pam.so`` examples and the
 
 
 Configuring Google PAM on Ubuntu 12.04 LTS
-==========================================
+------------------------------------------
 
 1. Install a few required packages::
 
@@ -90,11 +89,11 @@ Configuring Google PAM on Ubuntu 12.04 LTS
 
 5. Hide contents of the config file from the curious users::
 
-     root# chmod 600 /etc/pam_google.conf
+     # chmod 600 /etc/pam_google.conf
 
 6. Put the Google PAM module in a sensible location::
 
-     root# ln -s /usr/local/lib/python2.7/dist-packages/cipher.googlepam-<version>-py2.7.egg/cipher/googlepam/pam_google.py /lib/security/pam_google.py
+     # ln -s /usr/local/lib/python2.7/dist-packages/cipher.googlepam-<version>-py2.7.egg/cipher/googlepam/pam_google.py /lib/security/pam_google.py
 
 7. Enable pam_google for all authentication. Add the following rule as the
    first rule in file ``/etc/pam.d/common-auth``::

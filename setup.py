@@ -17,8 +17,7 @@ import os
 from setuptools import setup, find_packages
 
 def read(*rnames):
-    text = open(os.path.join(os.path.dirname(__file__), *rnames)).read()
-    return unicode(text, 'utf-8').encode('ascii', 'xmlcharrefreplace')
+    return open(os.path.join(os.path.dirname(__file__), *rnames)).read()
 
 setup(
     name='cipher.googlepam',
@@ -27,7 +26,7 @@ setup(
     long_description=(
         read('README.txt')
         + '\n\n' +
-        + read('CHANGES.txt')),
+        read('CHANGES.txt')),
     classifiers=[
       "Development Status :: 4 - Beta",
       "Programming Language :: Python",
