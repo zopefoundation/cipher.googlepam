@@ -14,8 +14,10 @@
 """Add Google users to system."""
 import logging
 import optparse
+import os
 import subprocess
 import sys
+import ConfigParser
 
 from gdata.apps.groups.service import GroupsService
 from gdata.apps.service import AppsService
@@ -24,6 +26,9 @@ parser = optparse.OptionParser()
 parser.usage = '%prog [options]'
 
 log = logging.getLogger("add-google-users")
+
+DEFAULT_CONFIG = os.path.join(os.path.dirname(__file__), 'googlepam.conf')
+SECTION_NAME = 'googlepam'
 
 ADDUSER_CMD = ('adduser --firstuid 2000 --disabled-password '
                '--gecos "%(full_name)s" %(user_name)s')
@@ -106,6 +111,11 @@ def addusers(options):
         do(ADDADMIN_CMD %user, dry_run=options.dry_run)
 
 parser.add_option(
+    '-C', '--config-file', action='store',
+    dest='config_file', default=DEFAULT_CONFIG,
+    help='The file containing pam_google configuration.')
+
+parser.add_option(
     '-d', '--domain', action='store', dest='domain',
     help='The Google domain in which the users belong.')
 
@@ -119,12 +129,12 @@ parser.add_option(
 
 parser.add_option(
     '-g', '--group', action='store',
-    dest='group', default='security',
+    dest='group',
     help='The group all users belong to.')
 
 parser.add_option(
     '-a', '--admin-group', action='store',
-    dest='admin_group', default='admin',
+    dest='admin_group',
     help='The group to which the user will be added.')
 
 parser.add_option(
@@ -138,12 +148,12 @@ parser.add_option(
     help='A flag, when set, does not execute commands.')
 
 parser.add_option(
-    "-q","--quiet", action="store_true",
+    "-q", "--quiet", action="store_true",
     dest="quiet", default=False,
     help="When specified, no messages are displayed.")
 
 parser.add_option(
-    "-v","--verbose", action="store_true",
+    "-v", "--verbose", action="store_true",
     dest="verbose", default=False,
     help="When specified, debug information is created.")
 
@@ -159,5 +169,26 @@ def main(args=None):
         log.setLevel(logging.DEBUG)
     if options.quiet:
         log.setLevel(logging.FATAL)
+
+    if options.config_file:
+        config = ConfigParser.ConfigParser()
+        config.read(options.config_file)
+        if not options.domain and config.has_option(SECTION_NAME, 'domain'):
+            options.domain = config.get(SECTION_NAME, 'domain')
+        if not options.user and config.has_option(SECTION_NAME, 'admin-username'):
+            options.user = config.get(SECTION_NAME, 'admin-username')
+        if not options.password and config.has_option(SECTION_NAME, 'admin-password'):
+            options.password = config.get(SECTION_NAME, 'admin-password')
+        if not options.group and config.has_option(SECTION_NAME, 'group'):
+            options.group = config.get(SECTION_NAME, 'group')
+
+    if not options.domain:
+        parser.error("please specify a Google-managed domain")
+    if not options.user:
+        parser.error("please specify the Google domain admin username")
+    if not options.password:
+        parser.error("please specify the Google domain admin password")
+    if not options.group:
+        parser.error("please specify the Google group")
 
     addusers(options)

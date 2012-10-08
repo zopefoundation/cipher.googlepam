@@ -4,7 +4,12 @@ CHANGES
 1.4.0 (unreleased)
 ------------------
 
-- Add a space after the prompt.
+- Add a space after the PAM prompt.
+
+- The add-google-users script now reads the pam_google config file to get the
+  domain, username, password and group.  You can also use -C/--config-file to
+  specify a different config file.
+
 
 1.3.0 (2012-04-24)
 ------------------
@@ -22,10 +27,12 @@ CHANGES
 
 - The package is ready for public release.
 
+
 1.2.0 (2012-04-17)
 ------------------
 
 - Do not fail if the username already exists.
+
 
 1.1.0 (2012-04-17)
 ------------------
