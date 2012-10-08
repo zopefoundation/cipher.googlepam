@@ -18,8 +18,7 @@ import subprocess
 import sys
 
 from gdata.apps.groups.service import GroupsService
-from gdata.apps.service import AppsService, AppsForYourDomainException
-from gdata.service import BadAuthentication, CaptchaRequired
+from gdata.apps.service import AppsService
 
 parser = optparse.OptionParser()
 parser.usage = '%prog [options]'

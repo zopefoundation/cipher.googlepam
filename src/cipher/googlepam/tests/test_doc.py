@@ -329,10 +329,13 @@ def setUp(test):
     pam_google.GooglePAM.AppsService = FakeAppsService
     test.orig_GroupsService = pam_google.GooglePAM.GroupsService
     pam_google.GooglePAM.GroupsService = FakeGroupsService
+    conf_file = os.path.join(os.path.dirname(__file__), 'googlepam.conf')
+    pam_google.parser.set_default('config_file', conf_file)
 
 def tearDown(test):
     pam_google.GooglePAM.AppsService = test.orig_AppsService
     pam_google.GooglePAM.GroupsService = test.orig_GroupsService
+    pam_google.parser.set_default('config_file', pam_google.DEFAULT_CONFIG)
 
 def test_suite():
     return doctest.DocTestSuite(

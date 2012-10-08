@@ -196,7 +196,7 @@ class GooglePAM(object):
         if self.pamh.authtok == None:
             LOG.debug('No auth token was found. Starting conversation.')
             msg = self.pamh.Message(
-                self.pamh.PAM_PROMPT_ECHO_OFF, self.password_prompt)
+                self.pamh.PAM_PROMPT_ECHO_OFF, self.password_prompt + ' ')
             response = self.pamh.conversation(msg)
             self.pamh.authtok = response.resp
             LOG.debug('Got password: %s', self.pamh.authtok)
