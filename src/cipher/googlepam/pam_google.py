@@ -183,7 +183,13 @@ class GooglePAM(object):
         LOG.debug('Start authentication via Google PAM: %s, %s',
                   self.flags, self.argv)
 
-        # 0. We do not authenticate exlcuded users.
+        if (not self.config.has_option(SECTION_NAME, 'domain') or
+            not self.config.has_option(SECTION_NAME, 'admin-username') or
+            not self.config.has_option(SECTION_NAME, 'admin-password')):
+                LOG.info('Google PAM not configured')
+                return self.pamh.PAM_IGNORE
+
+        # 0. We do not authenticate excluded users.
         if self.config.has_option(SECTION_NAME, 'excludes'):
             excluded = [
                 user.strip()
