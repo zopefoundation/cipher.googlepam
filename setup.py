@@ -21,7 +21,7 @@ def read(*rnames):
 
 setup(
     name='cipher.googlepam',
-    version='1.4.0dev',
+    version='1.4.0',
     description='Google PAM Module',
     long_description=(
         read('README.txt')

@@ -1,7 +1,7 @@
 CHANGES
 =======
 
-1.4.0 (unreleased)
+1.4.0 (2012-10-08)
 ------------------
 
 - Set umask to avoid world-readable log and cache files.
