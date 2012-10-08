@@ -12,6 +12,8 @@ CHANGES
   domain, username, password and group.  You can also use -C/--config-file to
   specify a different config file.
 
+- add-google-users does not break if you don't specify --admin-group.
+
 - Added Debian packaging.
 
 

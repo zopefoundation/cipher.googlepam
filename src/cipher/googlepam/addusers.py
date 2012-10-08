@@ -103,12 +103,13 @@ def addusers(options):
     # 3. Create a new user account for each account.
     for user in users:
         try:
-            do(options.command %user, dry_run=options.dry_run)
+            do(options.command % user, dry_run=options.dry_run)
         except CMDError, err:
             # We do not want to fail, if the user already exists.
             if err.args[0] != 1:
                 raise
-        do(ADDADMIN_CMD %user, dry_run=options.dry_run)
+        if options.admin_group:
+            do(ADDADMIN_CMD % user, dry_run=options.dry_run)
 
 parser.add_option(
     '-C', '--config-file', action='store',
