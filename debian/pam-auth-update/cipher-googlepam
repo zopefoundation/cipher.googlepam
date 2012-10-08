@@ -1,0 +1,6 @@
+Name: Google PAM
+Default: yes
+Priority: 300
+Auth-Type: Primary
+Auth:
+	[success=end default=ignore]	pam_python.so /usr/share/pyshared/cipher/googlepam/pam_google.py -c /etc/cipher-googlepam/pam_google.conf

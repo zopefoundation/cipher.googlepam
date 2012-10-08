@@ -10,6 +10,8 @@ CHANGES
   domain, username, password and group.  You can also use -C/--config-file to
   specify a different config file.
 
+- Added Debian packaging.
+
 
 1.3.0 (2012-04-24)
 ------------------

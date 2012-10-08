@@ -1,0 +1,22 @@
+Source: cipher.googlepam
+Section: admin
+Priority: extra
+Maintainer: Marius Gedminas <marius@cipherhealth.com>
+Build-Depends: debhelper (>= 8.0.0), python-dev, python-setuptools
+Standards-Version: 3.9.3
+Homepage: http://pypi.python.org/pypi/cipher.googlepam
+Vcs-Git: git://git.cipherhealth.com/git/cipher.googlepam.git
+Vcs-Browser: https://trac.cipherhealth.com/gitweb/?p=cipher.googlepam.git;a=summary
+
+Package: cipher-googlepam
+Architecture: all
+Depends: ${misc:Depends}, ${python:Depends}, libpam-python
+Description: PAM module allowing authentication against a Google domain
+ This package implements a Python PAM module to authenticate users against
+ a Google domain. The following features are provided:
+ .
+   - Select any Google domain.
+   - Allow only users from a certain group.
+   - A script to install all Google users as system users.
+   - Password caching using files or memcached.
+   - Advanced logging setup.

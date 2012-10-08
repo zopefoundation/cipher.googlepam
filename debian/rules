@@ -1,0 +1,15 @@
+#!/usr/bin/make -f
+# -*- makefile -*-
+
+# Uncomment this to turn on verbose mode.
+#export DH_VERBOSE=1
+
+%:
+	dh $@ --with python2
+
+override_dh_fixperms:
+	dh_fixperms
+	chmod 600 debian/cipher-googlepam/etc/cipher-googlepam/pam_google.conf
+
+# distutils likes to create a 'build' directory
+.PHONY: build

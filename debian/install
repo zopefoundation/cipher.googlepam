@@ -1,0 +1,2 @@
+debian/pam-auth-update/cipher-googlepam usr/share/pam-configs
+debian/pam_google.conf etc/cipher-googlepam

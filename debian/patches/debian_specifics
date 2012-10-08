@@ -1,0 +1,48 @@
+Description: Adjust default config file location and bcrypt egg name
+ The bcrypt package known upstream as py-crypt is packaged in Debian
+ (as python-crypt) under the distribution name 'bcrypt'.
+ .
+ Upstream doesn't have a sane location for the default pam_google.conf
+ file, but the Debian package has one.
+Author: Marius Gedminas <marius@cipherhealth.com>
+
+---
+The information above should follow the Patch Tagging Guidelines, please
+checkout http://dep.debian.net/deps/dep3/ to learn about the format. Here
+are templates for supplementary fields that you might want to add:
+
+Last-Update: 2012-10-08
+
+--- cipher.googlepam-1.4.0.orig/setup.py
++++ cipher.googlepam-1.4.0/setup.py
+@@ -50,7 +50,7 @@ setup(
+         ),
+     install_requires=[
+           'gdata',
+-          'py-bcrypt',
++          'bcrypt',
+           'python-memcached',
+           'setuptools',
+           ],
+--- cipher.googlepam-1.4.0.orig/src/cipher/googlepam/pam_google.py
++++ cipher.googlepam-1.4.0/src/cipher/googlepam/pam_google.py
+@@ -31,7 +31,7 @@ from gdata.apps.groups.service import Gr
+ from gdata.apps.service import AppsService, AppsForYourDomainException
+ from gdata.service import BadAuthentication, CaptchaRequired
+ 
+-DEFAULT_CONFIG = os.path.join(os.path.dirname(__file__), 'googlepam.conf')
++DEFAULT_CONFIG = '/etc/cipher-googlepam/pam_google.conf'
+ SECTION_NAME = 'googlepam'
+ LOG = logging.getLogger('cipher.googlepam.PAM')
+ 
+--- cipher.googlepam-1.4.0.orig/src/cipher/googlepam/addusers.py
++++ cipher.googlepam-1.4.0/src/cipher/googlepam/addusers.py
+@@ -27,7 +27,7 @@ parser.usage = '%prog [options]'
+ 
+ log = logging.getLogger("add-google-users")
+ 
+-DEFAULT_CONFIG = os.path.join(os.path.dirname(__file__), 'googlepam.conf')
++DEFAULT_CONFIG = '/etc/cipher-googlepam/pam_google.conf'
+ SECTION_NAME = 'googlepam'
+ 
+ ADDUSER_CMD = ('adduser --firstuid 2000 --disabled-password '

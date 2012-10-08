@@ -1,0 +1,5 @@
+cipher.googlepam (1.4.0-1) unstable; urgency=low
+
+  * Initial release.
+
+ -- Marius Gedminas <marius@cipherhealth.com>  Fri, 05 Oct 2012 13:40:32 +0300
