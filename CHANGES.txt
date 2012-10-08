@@ -4,6 +4,8 @@ CHANGES
 1.4.0 (unreleased)
 ------------------
 
+- Set umask to avoid world-readable log and cache files.
+
 - Add a space after the PAM prompt.
 
 - The add-google-users script now reads the pam_google config file to get the

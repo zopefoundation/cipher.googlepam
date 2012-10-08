@@ -170,6 +170,8 @@ class GooglePAM(object):
         self.config.read(self.options.config_file)
         if self.config.has_option(SECTION_NAME, 'prompt'):
             self.password_prompt = self.config.get(SECTION_NAME, 'prompt')
+        # no world-readable log and cache files please
+        os.umask(0o077)
         logging.config.fileConfig(
             self.options.config_file, disable_existing_loggers=False)
         if self.config.has_option(SECTION_NAME, 'cache'):
