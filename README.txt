@@ -99,3 +99,32 @@ Configuring Google PAM on Ubuntu 12.04 LTS
    first rule in file ``/etc/pam.d/common-auth``::
 
      auth    sufficient   pam_python.so /lib/security/pam_google.py -c /etc/pam_google.conf
+
+
+Building a Debian package
+-------------------------
+
+1. Install a few required packages::
+
+     # apt-get install build-essential debhelper devscripts fakeroot quilt
+
+2. Download the latest cipher.googlepam tarball from PyPI (or build one with
+   ``python setup.py sdist``)
+
+3. Rename the tarball ``cipher.googlepam_VERSION.orig.tar.gz`` (note: underscore
+   instead of the hyphen!), put it in the parent directory of the source tree
+   (if you don't have a source tree, just untar the tarball).
+
+4. Go to the source tree, run ``dch -i``, make sure the version number in the
+   changelog matches the package version, make sure your name and email are
+   correct, write a changelog entry itself (e.g. something like 'New upstream
+   release'.)
+
+5. Run ``debuild``.  If everything's fine, you should get a ``deb`` file in the
+   parent directory.
+
+Install the deb with ``sudo dpkg -i cipher.googlepam...deb; sudo apt-get -f
+install``.  Then edit ``/etc/cipher-googlepam/pam_google.conf`` and run
+``add-google-users``.  You don't need to manually edit PAM configuration if you
+use the .deb package.
+
