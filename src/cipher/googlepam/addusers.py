@@ -131,17 +131,17 @@ parser.add_option(
 parser.add_option(
     '-g', '--group', action='store',
     dest='group',
-    help='The group all users belong to.')
+    help='The Google group all users belong to.')
 
 parser.add_option(
-    '-a', '--admin-group', action='store',
+    '-a', '--add-to-group', '--admin-group', metavar='GROUP', action='store',
     dest='admin_group',
-    help='The group to which the user will be added.')
+    help='The Unix group to which the user will be added.')
 
 parser.add_option(
     '-c', '--command', action='store',
     dest='command', default=ADDUSER_CMD,
-    help='The command used to create the user.')
+    help='The command used to create the user (default: %default).')
 
 parser.add_option(
     '--dry-run', action='store_true',

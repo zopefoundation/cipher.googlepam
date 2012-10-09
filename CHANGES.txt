@@ -7,6 +7,9 @@ CHANGES
 - Support multiple Google groups.  The authenticating user has to be a member
   of any one of them for access to be allowed.
 
+- Added add-google-users option --add-to-group as a more meaningful alias for
+  the old --admin-group option.
+
 
 1.4.0 (2012-10-08)
 ------------------
