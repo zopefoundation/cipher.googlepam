@@ -93,6 +93,8 @@ class FakeGroupsService(object):
             return True
         if username in ('user1', 'user2') and group == 'group2':
             return True
+        if username == 'user4' and group == 'group3':
+            return True
         return False
 
 
@@ -185,7 +187,7 @@ def doctest_GooglePAM_authenticate():
 
     This test goes through all scenarios top to bottom.
 
-    User is in exlcudes list:
+    User is in excludes list:
 
       >>> pam.pamh = FakePamHandle('root', 'pwd')
       >>> pam.authenticate()
@@ -269,6 +271,34 @@ def doctest_GooglePAM_authenticate():
 
     """
 
+def doctest_GooglePAM_authenticate_multiple_groups():
+    """class GooglePAM: authenticate()
+
+      >>> pam = pam_google.GooglePAM(
+      ...     FakePamHandle(), 0,
+      ...     ['script', '-c', os.path.join(HERE, 'multi-group.conf')])
+
+    User is in the wrong group:
+
+      >>> pam.pamh = FakePamHandle('user4', 'good-pwd')
+      >>> pam.authenticate()
+      INFO - User "user4" is not a member of any of groups "group1", "group2".
+      9
+
+    Successful authentication:
+
+      >>> pam.pamh = FakePamHandle('user1', 'good-pwd')
+      >>> pam.authenticate()
+      INFO - Authentication succeeded: user1
+      0
+
+      >>> pam.pamh = FakePamHandle('user2', 'good-pwd')
+      >>> pam.authenticate()
+      INFO - Authentication succeeded: user2
+      0
+
+    """
+
 def doctest_FileCache():
     """class FileCache
 
@@ -329,7 +359,7 @@ def setUp(test):
     pam_google.GooglePAM.AppsService = FakeAppsService
     test.orig_GroupsService = pam_google.GooglePAM.GroupsService
     pam_google.GooglePAM.GroupsService = FakeGroupsService
-    conf_file = os.path.join(os.path.dirname(__file__), 'googlepam.conf')
+    conf_file = os.path.join(HERE, 'googlepam.conf')
     pam_google.parser.set_default('config_file', conf_file)
 
 def tearDown(test):

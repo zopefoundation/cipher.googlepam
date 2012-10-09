@@ -229,8 +229,9 @@ class GooglePAM(object):
         # Note: We could do that check before asking for the password, but
         # then we would give away the fact that the username is incorrect.
         if self.config.has_option(SECTION_NAME, 'group'):
-            group = self.config.get(SECTION_NAME, 'group')
-            LOG.debug('Group found: %s', group)
+            groups = [g.strip() for g in
+                      self.config.get(SECTION_NAME, 'group').split(',')]
+            LOG.debug('Groups found: %s', ', '.join(groups))
             service = self.GroupsService(
                 domain=self.config.get(SECTION_NAME, 'domain'),
                 email=self._get_email(
@@ -239,16 +240,21 @@ class GooglePAM(object):
                 )
             service.ProgrammaticLogin()
             try:
-                if not service.IsMember(self.pamh.user, group):
+                for group in groups:
+                    if service.IsMember(self.pamh.user, group):
+                        LOG.debug('User "%s" is a member of group "%s".',
+                                  self.pamh.user, group)
+                        break
+                else:
                     LOG.info(
-                        'User "%s" is not a member of group "%s".',
-                        self.pamh.user, group)
+                        'User "%s" is not a member of %s %s.',
+                        self.pamh.user,
+                        "group" if len(groups) == 1 else "any of groups",
+                        ', '.join('"%s"' % group for group in groups))
                     return self.pamh.PAM_AUTH_ERR
             except AppsForYourDomainException, err:
                 LOG.exception('Admin user has insufficient priviledges.')
                 return self.pamh.PAM_AUTH_ERR
-            LOG.debug(
-                'User "%s" is a member of group "%s".', self.pamh.user, group)
 
         service = self.AppsService(
             domain=self.config.get(SECTION_NAME, 'domain'),
