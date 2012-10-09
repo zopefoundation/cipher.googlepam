@@ -93,6 +93,9 @@ def addusers(options):
     users = []
     for email in emails:
         entry = apps_srv.RetrieveUser(email.split('@')[0])
+        if options.exclude and entry.login.user_name in options.exclude:
+            log.info('Skipping %s (%s)', entry.login.user_name, email)
+            continue
         users.append({
             'full_name': '%s %s' %(entry.name.given_name,
                                    entry.name.family_name),
@@ -137,6 +140,11 @@ parser.add_option(
     '-a', '--add-to-group', '--admin-group', metavar='GROUP', action='store',
     dest='admin_group',
     help='The Unix group to which the user will be added.')
+
+parser.add_option(
+    '-x', '--exclude', metavar='USERNAME', action='append',
+    dest='exclude',
+    help='Do not add these users.')
 
 parser.add_option(
     '-c', '--command', action='store',
