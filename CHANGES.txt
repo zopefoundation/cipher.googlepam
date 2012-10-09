@@ -1,7 +1,7 @@
 CHANGES
 =======
 
-1.5.0 (unreleased)
+1.5.0 (2012-10-09)
 ------------------
 
 - Support multiple Google groups.  The authenticating user has to be a member
