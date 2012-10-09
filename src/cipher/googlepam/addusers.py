@@ -112,7 +112,7 @@ def addusers(options):
             if err.args[0] != 1:
                 raise
         if options.admin_group:
-            do(ADDADMIN_CMD % user, dry_run=options.dry_run)
+            do(options.group_command % user, dry_run=options.dry_run)
 
 parser.add_option(
     '-C', '--config-file', action='store',
@@ -150,6 +150,11 @@ parser.add_option(
     '-c', '--command', action='store',
     dest='command', default=ADDUSER_CMD,
     help='The command used to create the user (default: %default).')
+
+parser.add_option(
+    '--add-to-group-command', metavar='COMMAND', action='store',
+    dest='group_command', default=ADDADMIN_CMD,
+    help='The command used to add a user to a group (default: %default).')
 
 parser.add_option(
     '--dry-run', action='store_true',
