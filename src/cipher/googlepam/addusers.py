@@ -197,12 +197,12 @@ def main(args=None):
             options.group = config.get(SECTION_NAME, 'group')
 
     if not options.domain:
-        parser.error("please specify a Google-managed domain")
+        parser.error("please specify a Google-managed domain (-d)")
     if not options.user:
-        parser.error("please specify the Google domain admin username")
+        parser.error("please specify the Google domain admin username (-u)")
     if not options.password:
-        parser.error("please specify the Google domain admin password")
+        parser.error("please specify the Google domain admin password (-p)")
     if not options.group:
-        parser.error("please specify the Google group")
+        parser.error("please specify the Google group (-g)")
 
     addusers(options)
