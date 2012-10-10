@@ -4,6 +4,14 @@ CHANGES
 1.5.1 (unreleased)
 ------------------
 
+- MemCache reliability fixes:
+
+  + **SECURITY FIX**: do not use the same cache key for all users.
+
+    Previously when one user logged in successfully, others could not log in
+    using their own passwords -- but the first user could now use her password
+    to log in as anyone else.
+
 - FileCache reliability fixes:
 
   + Avoid incorrect cache lookups (or invalidations) when a username is a

@@ -466,6 +466,7 @@ def doctest_MemcacheCache():
       True
       >>> pam._cache.authenticate('user', 'bad')
       False
+      >>> pam._cache.authenticate('other', 'pwd')
 
     When the cache entry times out, the cache behaves as it has no entry:
 

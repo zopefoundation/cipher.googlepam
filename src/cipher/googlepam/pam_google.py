@@ -138,10 +138,10 @@ class MemcacheCache(BaseCache):
         self._client = memcache.Client(
                 ['%s:%s' %(self.pam.config.get(self.SECTION_NAME, 'host'),
                            self.pam.config.get(self.SECTION_NAME, 'port'))],
-                debug = self.pam.config.getboolean(self.SECTION_NAME, 'debug'))
+                debug=self.pam.config.getboolean(self.SECTION_NAME, 'debug'))
 
     def _get_key(self, username):
-        return self.pam.config.get(self.SECTION_NAME, 'key-prefix')
+        return self.pam.config.get(self.SECTION_NAME, 'key-prefix') + username
 
     def _get_user_info(self, username):
         return self._client.get(self._get_key(username))
