@@ -26,6 +26,7 @@ import memcache
 import optparse
 import os
 import time
+import errno
 
 from gdata.apps.groups.service import GroupsService
 from gdata.apps.service import AppsService, AppsForYourDomainException
@@ -87,16 +88,23 @@ class FileCache(BaseCache):
         self._filename = self.pam.config.get(self.SECTION_NAME, 'file')
 
     def _get_user_info(self, username):
-        if not os.path.exists(self._filename):
-            return
-        with open(self._filename, 'r') as file:
-            for line in file:
-                if line.startswith(username):
-                    username, created, pw_hash = line.strip().split('::', 2)
-                    return UserInfo(float(created), pw_hash)
+        try:
+            with open(self._filename, 'r') as file:
+                for line in file:
+                    if line.startswith(username + '::'):
+                        username, created, pw_hash = line.strip().split('::', 2)
+                        return UserInfo(float(created), pw_hash)
+        except IOError, e:
+            pass
         return None
 
     def _add_user_info(self, username, password):
+        if '::' in username or '\n' in username:
+            # let's not break our cache file, mmkay?
+            # also, it would be a Bad Idea if we let people stuff their
+            # own username + passwordhash combos into the cache file by
+            # stuffing them into the username
+            return
         with open(self._filename, 'a') as file:
             file.write('%s::%f::%s\n' %(
                     username,
@@ -107,11 +115,15 @@ class FileCache(BaseCache):
     def _del_user_info(self, username):
         if not os.path.exists(self._filename):
             return
-        with open(self._filename, 'r') as file:
-            lines = [line for line in file
-                     if not line.startswith(username)]
-        with open(self._filename, 'w') as file:
-            file.writelines(lines)
+        try:
+            with open(self._filename, 'r') as file:
+                lines = [line for line in file
+                         if not line.startswith(username + '::')]
+        except IOError:
+            pass
+        else:
+            with open(self._filename, 'w') as file:
+                file.writelines(lines)
 
     def clear(self):
         os.remove(self._filename)

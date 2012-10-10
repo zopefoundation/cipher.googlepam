@@ -4,7 +4,16 @@ CHANGES
 1.5.1 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- FileCache reliability fixes:
+
+  + Avoid incorrect cache lookups (or invalidations) when a username is a
+    proper prefix of some other username.
+
+  + Avoid cache poisoning if usernames contain embedded '::' separators or
+    newlines.
+
+  + Avoid exceptions on a race condition if the cache file disappears after
+    we check for its existence but before we open it for reading.
 
 
 1.5.0 (2012-10-09)

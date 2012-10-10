@@ -15,12 +15,23 @@
 """
 import doctest
 import os
+import tempfile
+import ConfigParser
+import shutil
 
 from cipher.googlepam import pam_google
 from gdata.apps.service import AppsForYourDomainException
 from gdata.service import BadAuthentication, CaptchaRequired
 
 HERE = os.path.dirname(__file__)
+
+class GooglePAMStub(object):
+    def __init__(self, config={}):
+        self.config = ConfigParser.ConfigParser()
+        for section, d in config.items():
+            self.config.add_section(section)
+            for k, v in d.items():
+                self.config.set(section, k, v)
 
 class FakePamMessage(object):
     def __init__(self, flags, prompt):
@@ -317,6 +328,10 @@ def doctest_FileCache():
       >>> pam._cache.authenticate('user', 'bad')
       False
 
+    Regression test: truncated usernames do not match
+
+      >>> pam._cache.authenticate('use', 'pwd')
+
     When the cache entry times out, the cache behaves as it has no entry:
 
       >>> pam._cache.lifespan = 0
@@ -326,6 +341,112 @@ def doctest_FileCache():
     We can also clear the file:
 
       >>> pam._cache.clear()
+    """
+
+def doctest_FileCache_get_user_info_file_does_not_exist():
+    """Test for FileCache._get_user_info
+
+        >>> pam = GooglePAMStub({'file-cache': {
+        ...     'file': 'nosuchfile',
+        ...     'lifespan': '600',
+        ... }})
+        >>> fc = pam_google.FileCache(pam)
+        >>> fc._get_user_info('bob')
+
+    """
+
+def doctest_FileCache_get_user_info_file_goes_away():
+    """Test for FileCache._get_user_info
+
+        >>> orig_exists = os.path.exists
+
+        >>> pam = GooglePAMStub({'file-cache': {
+        ...     'file': 'nosuchfile',
+        ...     'lifespan': '600',
+        ... }})
+        >>> fc = pam_google.FileCache(pam)
+        >>> os.path.exists = lambda filename: True
+
+    Look-before-you-leap is prone to race conditions: the file might be
+    deleted after you check for its existence
+
+        >>> fc._get_user_info('bob')
+
+        >>> os.path.exists = orig_exists
+
+    """
+
+def doctest_FileCache_add_user_info():
+    r"""Test for FileCache._add_user_info
+
+        >>> tempdir = tempfile.mkdtemp(prefix='cipher.googlepam-test-')
+        >>> cachefile = os.path.join(tempdir, 'cache')
+
+        >>> pam = GooglePAMStub({'file-cache': {
+        ...     'file': cachefile,
+        ...     'lifespan': '600',
+        ... }})
+        >>> fc = pam_google.FileCache(pam)
+        >>> fc._add_user_info('bob', 's3cr3t')
+        >>> print open(cachefile).read().strip()
+        bob::...::...
+
+    you can't poison the cache with trick usernames
+
+        >>> fc._add_user_info('bob::0::mypasswordhash', 's3cr3t')
+        >>> fc._add_user_info('fred\nroot', 's3cr3t')
+        >>> print len(open(cachefile).readlines())
+        1
+
+        >>> shutil.rmtree(tempdir)
+
+    """
+
+def doctest_FileCache_del_user_info_file_goes_away():
+    """Test for FileCache._del_user_info
+
+        >>> orig_exists = os.path.exists
+
+        >>> pam = GooglePAMStub({'file-cache': {
+        ...     'file': '/nosuchfile',
+        ...     'lifespan': '600',
+        ... }})
+        >>> fc = pam_google.FileCache(pam)
+        >>> os.path.exists = lambda filename: True
+
+    Look-before-you-leap is prone to race conditions: the file might be
+    deleted after you check for its existence
+
+        >>> fc._del_user_info('bob')
+
+        >>> os.path.exists = orig_exists
+
+    """
+
+def doctest_FileCache_del_user_info_prefix_safety():
+    """Test for FileCache._del_user_info
+
+        >>> tempdir = tempfile.mkdtemp(prefix='cipher.googlepam-test-')
+        >>> cachefile = os.path.join(tempdir, 'cache')
+
+        >>> pam = GooglePAMStub({'file-cache': {
+        ...     'file': cachefile,
+        ...     'lifespan': '600',
+        ... }})
+        >>> fc = pam_google.FileCache(pam)
+        >>> fc._add_user_info('bob', 's3cr3t')
+
+    Now we try to delete 'bo', which is a prefix of 'bob'
+
+        >>> fc._del_user_info('bo')
+
+    and we should still have the 'bob' line in the cache file
+
+        >>> print len(open(cachefile).readlines())
+        1
+
+        >>> shutil.rmtree(tempdir)
+
     """
 
 def doctest_MemcacheCache():
