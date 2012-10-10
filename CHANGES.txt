@@ -15,6 +15,9 @@ CHANGES
   + Avoid exceptions on a race condition if the cache file disappears after
     we check for its existence but before we open it for reading.
 
+- Add missing test file for multi-group support.  It was accidentally left
+  out of the last release.
+
 
 1.5.0 (2012-10-09)
 ------------------
