@@ -30,7 +30,10 @@ CHANGES
     we check for its existence but before we open it for reading.
 
 - Add missing test file for multi-group support.  It was accidentally left
-  out of the last release.
+  out of the last release causing a test failure.
+
+- Make add-google-users skip users that already exist without printing
+  scary error messages that make it seem the script aborted early.
 
 
 1.5.0 (2012-10-09)

@@ -18,6 +18,8 @@ import os
 import subprocess
 import sys
 import ConfigParser
+import pwd
+import grp
 
 from gdata.apps.groups.service import GroupsService
 from gdata.apps.service import AppsService
@@ -104,15 +106,34 @@ def addusers(options):
             })
         log.debug('Found user data: %r', users[-1])
     # 3. Create a new user account for each account.
+    added = 0
+    added_to_group = 0
     for user in users:
+        # We do not want to fail if the user already exists.
         try:
+            pwd.getpwnam(user['user_name'])
+        except KeyError:
             do(options.command % user, dry_run=options.dry_run)
-        except CMDError, err:
-            # We do not want to fail, if the user already exists.
-            if err.args[0] != 1:
-                raise
-        if options.admin_group:
-            do(options.group_command % user, dry_run=options.dry_run)
+            added += 1
+        else:
+            log.info('Not adding %s: user account already exists',
+                     user['user_name'])
+        if user['admin-group']:
+            if is_member(user['user_name'], user['admin-group']):
+                log.debug('Not adding %s to group %s: already a member',
+                          user['user_name'], user['admin-group'])
+            else:
+                do(options.group_command % user, dry_run=options.dry_run)
+                added_to_group += 1
+    if added:
+        log.info('Added %d users.', added)
+    if added_to_group:
+        log.info('Added %d users to group %s.', added_to_group,
+                 options.admin_group)
+
+def is_member(user, group):
+    return user in grp.getgrnam(group).gr_mem
+
 
 parser.add_option(
     '-C', '--config-file', action='store',
