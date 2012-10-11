@@ -14,6 +14,7 @@
 """Google PAM Tests
 """
 import doctest
+import sys
 import os
 import tempfile
 import ConfigParser
@@ -452,12 +453,27 @@ def doctest_FileCache_del_user_info_prefix_safety():
 def doctest_MemcacheCache():
     """class MemcacheCache
 
+    This is a bit tricky: when pam_python.so loads the module, its name
+    ends up being simply 'pam_google' instead of 'cipher.googlepam.pam_google'.
+    This can break unpickling of classes defined in that module, since
+    pam_python.so doesn't add the directory containing pam_google.py to
+    sys.path, and it doesn't add pam_google itself to sys.modules.
+
+      >>> sys.path.insert(0, os.path.dirname(pam_google.__file__))
+      >>> import pam_google
+      >>> pam_google.__name__
+      'pam_google'
+      >>> del sys.path[0]
+      >>> del sys.modules['pam_google']
+
+    Now that we have an approximation of that environment, let's go on
+
       >>> pam = pam_google.GooglePAM(
       ...     FakePamHandle(), 0,
       ...     ['script', '-c', os.path.join(HERE, 'mem-cache.conf')])
 
       >>> pam._cache
-      <cipher.googlepam.pam_google.MemcacheCache object at ...>
+      <pam_google.MemcacheCache object at ...>
 
       >>> pam._cache.authenticate('user', 'pwd')
 

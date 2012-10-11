@@ -144,12 +144,15 @@ class MemcacheCache(BaseCache):
         return self.pam.config.get(self.SECTION_NAME, 'key-prefix') + username
 
     def _get_user_info(self, username):
-        return self._client.get(self._get_key(username))
+        cached = self._client.get(self._get_key(username))
+        if cached is None:
+            return None
+        return UserInfo(*cached)
 
     def _add_user_info(self, username, password):
         self._client.set(
             self._get_key(username),
-            UserInfo(time.time(), bcrypt.hashpw(password, bcrypt.gensalt())))
+            (time.time(), bcrypt.hashpw(password, bcrypt.gensalt())))
 
     def _del_user_info(self, username):
         self._client.delete(self._get_key(username))

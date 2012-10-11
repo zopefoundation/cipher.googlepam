@@ -12,6 +12,12 @@ CHANGES
     using their own passwords -- but the first user could now use her password
     to log in as anyone else.
 
+  + Do not store custom classes in memcached so we don't get unpickling
+    errors caused by the special execution environment set up by
+    pam_python.so.  Previously the cached value was a subclass of tuple,
+    now it's a plain tuple, so old caches will continue to work with the
+    new code.
+
 - FileCache reliability fixes:
 
   + Avoid incorrect cache lookups (or invalidations) when a username is a
