@@ -17,7 +17,8 @@ import os
 from setuptools import setup, find_packages
 
 def read(*rnames):
-    return open(os.path.join(os.path.dirname(__file__), *rnames)).read()
+    with open(os.path.join(os.path.dirname(__file__), *rnames)) as f:
+        return f.read()
 
 setup(
     name='cipher.googlepam',
@@ -39,7 +40,7 @@ setup(
     url='http://pypi.python.org/pypi/cipher.googlepam',
     keywords='pam google',
     packages = find_packages('src'),
-    package_dir = {'':'src'},
+    package_dir = {'': 'src'},
     namespace_packages = ['cipher'],
     include_package_data=True,
     zip_safe=False,
