@@ -32,6 +32,7 @@ from gdata.apps.groups.service import GroupsService
 from gdata.apps.service import AppsService, AppsForYourDomainException
 from gdata.service import BadAuthentication, CaptchaRequired
 
+
 DEFAULT_CONFIG = os.path.join(os.path.dirname(__file__), 'googlepam.conf')
 SECTION_NAME = 'googlepam'
 LOG = logging.getLogger('cipher.googlepam.PAM')
@@ -158,7 +159,94 @@ class MemcacheCache(BaseCache):
         self._client.delete(self._get_key(username))
 
 
-class GooglePAM(object):
+class GoogleAuthBase(object):
+    """Utilities for Google Authentication
+
+    Subclasses must provide the `config` attribute.
+    """
+
+    # Testing Hooks
+    AppsService = AppsService
+    GroupsService = GroupsService
+
+    def _readConfig(self, config_file):
+        config = ConfigParser.ConfigParser()
+        config.xform = str
+        config.read(config_file)
+        return config
+
+    def checkGroups(self, user):
+        """Check whether the user is a member of any group specified
+        in the config.
+
+        Returns a boolean.
+        """
+        if self.config.has_option(SECTION_NAME, 'group'):
+            groups = [g.strip() for g in
+                      self.config.get(SECTION_NAME, 'group').split(',')]
+            LOG.debug('Groups found: %s', ', '.join(groups))
+            service = self.GroupsService(
+                domain=self.config.get(SECTION_NAME, 'domain'),
+                email=self._get_email(
+                    self.config.get(SECTION_NAME, 'admin-username')),
+                password=self.config.get(SECTION_NAME, 'admin-password')
+                )
+            service.ProgrammaticLogin()
+            try:
+                for group in groups:
+                    if service.IsMember(user, group):
+                        LOG.debug('User "%s" is a member of group "%s".',
+                                  user, group)
+                        break
+                else:
+                    LOG.info(
+                        'User "%s" is not a member of %s %s.',
+                        user,
+                        "group" if len(groups) == 1 else "any of groups",
+                        ', '.join('"%s"' % group for group in groups))
+                    return False
+            except AppsForYourDomainException, err:
+                LOG.exception('Admin user has insufficient priviledges.')
+                return False
+
+        return True
+
+
+    def checkPassword(self, user, password):
+        """Try to authenticate a user with a given password.
+
+        Returns True if authentication is successful, False otherwise.
+        """
+        service = self.AppsService(
+            domain=self.config.get(SECTION_NAME, 'domain'),
+            email=self._get_email(
+                self.config.get(SECTION_NAME, 'admin-username')),
+            password=self.config.get(SECTION_NAME, 'admin-password')
+            )
+
+        try:
+            service.ClientLogin(
+                self._get_email(user),
+                password,
+                account_type='HOSTED', source='cipher-google-pam')
+            return True
+
+        except BadAuthentication, e:
+            LOG.info('Authentication failed for: %s', user)
+            return False
+        except CaptchaRequired, e:
+            LOG.error('Captcha Required: %s', user)
+            return False
+        except:
+            LOG.exception('Unknown Exception: %s', user)
+            return False
+
+    def _get_email(self, user):
+        return user + '@' + self.config.get(SECTION_NAME, 'domain')
+
+
+class GooglePAM(GoogleAuthBase):
+    """A PAM plugin checking Google Apps domain passwords"""
 
     password_prompt = 'Password:'
     _cache = None
@@ -168,10 +256,6 @@ class GooglePAM(object):
         'memcache': MemcacheCache
         }
 
-    # Testing Hooks
-    AppsService = AppsService
-    GroupsService = GroupsService
-
     def __init__(self, pamh, flags, argv):
         self.pamh = pamh
         self.flags = flags
@@ -180,9 +264,7 @@ class GooglePAM(object):
 
     def initialize(self):
         self.options, self.args = parser.parse_args(self.argv[1:])
-        self.config = ConfigParser.ConfigParser()
-        self.config.xform = str
-        self.config.read(self.options.config_file)
+        self.config = self._readConfig(self.options.config_file)
         if self.config.has_option(SECTION_NAME, 'prompt'):
             self.password_prompt = self.config.get(SECTION_NAME, 'prompt')
         # no world-readable log and cache files please
@@ -192,9 +274,6 @@ class GooglePAM(object):
         if self.config.has_option(SECTION_NAME, 'cache'):
             klass = self.cache_classes[self.config.get(SECTION_NAME, 'cache')]
             self._cache = klass(self)
-
-    def _get_email(self, user):
-        return user+'@'+self.config.get(SECTION_NAME, 'domain')
 
     def authenticate(self):
         LOG.debug('Start authentication via Google PAM: %s, %s',
@@ -243,55 +322,10 @@ class GooglePAM(object):
         # group, otherwise we do not even have to proceed.
         # Note: We could do that check before asking for the password, but
         # then we would give away the fact that the username is incorrect.
-        if self.config.has_option(SECTION_NAME, 'group'):
-            groups = [g.strip() for g in
-                      self.config.get(SECTION_NAME, 'group').split(',')]
-            LOG.debug('Groups found: %s', ', '.join(groups))
-            service = self.GroupsService(
-                domain=self.config.get(SECTION_NAME, 'domain'),
-                email=self._get_email(
-                    self.config.get(SECTION_NAME, 'admin-username')),
-                password=self.config.get(SECTION_NAME, 'admin-password')
-                )
-            service.ProgrammaticLogin()
-            try:
-                for group in groups:
-                    if service.IsMember(self.pamh.user, group):
-                        LOG.debug('User "%s" is a member of group "%s".',
-                                  self.pamh.user, group)
-                        break
-                else:
-                    LOG.info(
-                        'User "%s" is not a member of %s %s.',
-                        self.pamh.user,
-                        "group" if len(groups) == 1 else "any of groups",
-                        ', '.join('"%s"' % group for group in groups))
-                    return self.pamh.PAM_AUTH_ERR
-            except AppsForYourDomainException, err:
-                LOG.exception('Admin user has insufficient priviledges.')
-                return self.pamh.PAM_AUTH_ERR
-
-        service = self.AppsService(
-            domain=self.config.get(SECTION_NAME, 'domain'),
-            email=self._get_email(
-                self.config.get(SECTION_NAME, 'admin-username')),
-            password=self.config.get(SECTION_NAME, 'admin-password')
-            )
-
-        try:
-            service.ClientLogin(
-                self._get_email(self.pamh.user),
-                self.pamh.authtok,
-                account_type='HOSTED', source='cipher-google-pam')
-
-        except BadAuthentication, e:
-            LOG.info('Authentication failed for: %s', self.pamh.user)
+        if not self.checkGroups(self.pamh.user):
             return self.pamh.PAM_AUTH_ERR
-        except CaptchaRequired, e:
-            LOG.error('Captcha Required: %s', self.pamh.user)
-            return self.pamh.PAM_AUTH_ERR
-        except:
-            LOG.exception('Unknown Exception: %s', self.pamh.user)
+
+        if not self.checkPassword(self.pamh.user, self.pamh.authtok):
             return self.pamh.PAM_AUTH_ERR
 
         # Store the good credentials in the cache.
@@ -321,6 +355,15 @@ class GooglePAM(object):
     def close_session(self):
         LOG.info("`close_session` is not supported.")
         return self.pamh.PAM_SERVICE_ERR
+
+
+class GoogleAuth(GoogleAuthBase):
+    """Check Google passwords given a config file"""
+    def __init__(self, config_file):
+        self.config = self._readConfig(config_file)
+        # no world-readable log and cache files please
+        os.umask(0o077)
+        logging.config.fileConfig(config_file, disable_existing_loggers=False)
 
 
 # Official pam_python API.

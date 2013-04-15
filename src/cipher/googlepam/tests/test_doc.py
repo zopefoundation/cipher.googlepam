@@ -492,17 +492,89 @@ def doctest_MemcacheCache():
 
     """
 
+
+def doctest_GoogleAuth_checkPassword():
+    """Check that the password matches for a given Google Apps user.
+
+      >>> auth = pam_google.GoogleAuth(os.path.join(HERE, 'file-cache.conf'))
+
+    Good credentials:
+
+      >>> auth.checkPassword('user2', 'good-pwd')
+      True
+
+    Bad Authentication:
+
+      >>> auth.checkPassword('user1', 'bad-pwd')
+      INFO - Authentication failed for: user1
+      False
+
+    Captcha Required:
+
+      >>> auth.checkPassword('user3', 'bad-pwd')
+      ERROR - Captcha Required: user3
+      False
+
+    General error:
+
+      >>> auth.checkPassword('error', 'good-pwd')
+      ERROR - Unknown Exception: error
+      Traceback (most recent call last):
+        ...
+      ValueError: error@example.com
+      False
+
+
+    """
+
+
+def doctest_GoogleAuth_checkGroups():
+    """Check that the user is in a specified group.
+
+    When there is no 'group' option in the config, this check always
+    passes:
+
+      >>> auth = pam_google.GoogleAuth(os.path.join(HERE, 'file-cache.conf'))
+      >>> auth.config.remove_option('googlepam', 'group')
+      True
+      >>> auth.checkGroups('whatever')
+      True
+
+    Successful check:
+
+      >>> auth = pam_google.GoogleAuth(os.path.join(HERE, 'multi-group.conf'))
+      >>> auth.checkGroups('user1')
+      True
+
+    Multigroup fail:
+
+      >>> auth.checkGroups('user4')
+      INFO - User "user4" is not a member of any of groups "group1", "group2".
+      False
+
+    Admin authorization failure:
+
+      >>> auth.checkGroups('notallowed')
+      ERROR - Admin user has insufficient priviledges.
+      Traceback (most recent call last):
+        ...
+      AppsForYourDomainException: admin@example.com
+      False
+
+    """
+
+
 def setUp(test):
-    test.orig_AppsService = pam_google.GooglePAM.AppsService
-    pam_google.GooglePAM.AppsService = FakeAppsService
-    test.orig_GroupsService = pam_google.GooglePAM.GroupsService
-    pam_google.GooglePAM.GroupsService = FakeGroupsService
+    test.orig_AppsService = pam_google.GoogleAuthBase.AppsService
+    pam_google.GoogleAuthBase.AppsService = FakeAppsService
+    test.orig_GroupsService = pam_google.GoogleAuthBase.GroupsService
+    pam_google.GoogleAuthBase.GroupsService = FakeGroupsService
     conf_file = os.path.join(HERE, 'googlepam.conf')
     pam_google.parser.set_default('config_file', conf_file)
 
 def tearDown(test):
-    pam_google.GooglePAM.AppsService = test.orig_AppsService
-    pam_google.GooglePAM.GroupsService = test.orig_GroupsService
+    pam_google.GoogleAuthBase.AppsService = test.orig_AppsService
+    pam_google.GoogleAuthBase.GroupsService = test.orig_GroupsService
     pam_google.parser.set_default('config_file', pam_google.DEFAULT_CONFIG)
 
 def test_suite():
