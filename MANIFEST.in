@@ -1,0 +1,7 @@
+include *.py
+include *.rst
+include .travis.yml
+include buildout.cfg
+include versions.cfg
+recursive-include debian *
+recursive-include src *.conf
