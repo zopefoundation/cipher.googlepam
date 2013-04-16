@@ -19,6 +19,7 @@ import os
 import tempfile
 import ConfigParser
 import shutil
+import logging
 
 from cipher.googlepam import pam_google
 from gdata.apps.service import AppsForYourDomainException
@@ -496,6 +497,10 @@ def doctest_MemcacheCache():
 def doctest_GoogleAuth_checkPassword():
     """Check that the password matches for a given Google Apps user.
 
+      >>> handler = logging.StreamHandler(sys.stdout)
+      >>> handler.setFormatter(logging.Formatter('%(levelname)s - %(message)s'))
+      >>> pam_google.LOG.addHandler(handler)
+
       >>> auth = pam_google.GoogleAuth(os.path.join(HERE, 'file-cache.conf'))
 
     Good credentials:
@@ -524,12 +529,19 @@ def doctest_GoogleAuth_checkPassword():
       ValueError: error@example.com
       False
 
+    Clean up:
+
+      >>> pam_google.LOG.removeHandler(handler)
 
     """
 
 
 def doctest_GoogleAuth_checkGroups():
     """Check that the user is in a specified group.
+
+      >>> handler = logging.StreamHandler(sys.stdout)
+      >>> handler.setFormatter(logging.Formatter('%(levelname)s - %(message)s'))
+      >>> pam_google.LOG.addHandler(handler)
 
     When there is no 'group' option in the config, this check always
     passes:
@@ -560,6 +572,10 @@ def doctest_GoogleAuth_checkGroups():
         ...
       AppsForYourDomainException: admin@example.com
       False
+
+    Clean up:
+
+      >>> pam_google.LOG.removeHandler(handler)
 
     """
 

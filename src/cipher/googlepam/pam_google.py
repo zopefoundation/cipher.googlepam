@@ -26,7 +26,6 @@ import memcache
 import optparse
 import os
 import time
-import errno
 
 from gdata.apps.groups.service import GroupsService
 from gdata.apps.service import AppsService, AppsForYourDomainException
@@ -211,7 +210,6 @@ class GoogleAuthBase(object):
 
         return True
 
-
     def checkPassword(self, user, password):
         """Try to authenticate a user with a given password.
 
@@ -361,9 +359,6 @@ class GoogleAuth(GoogleAuthBase):
     """Check Google passwords given a config file"""
     def __init__(self, config_file):
         self.config = self._readConfig(config_file)
-        # no world-readable log and cache files please
-        os.umask(0o077)
-        logging.config.fileConfig(config_file, disable_existing_loggers=False)
 
 
 # Official pam_python API.
