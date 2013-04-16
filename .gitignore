@@ -6,3 +6,10 @@ bin/
 parts/
 eggs/
 develop-eggs/
+build/
+debian/files
+debian/cipher-googlepam/
+debian/cipher-googlepam.debhelper.log
+debian/cipher-googlepam.postinst.debhelper
+debian/cipher-googlepam.prerm.debhelper
+debian/cipher-googlepam.substvars

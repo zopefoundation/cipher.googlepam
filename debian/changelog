@@ -1,3 +1,15 @@
+cipher.googlepam (1.6.0-1) precise; urgency=low
+
+  * New upstream version.
+
+ -- Marius Gedminas <marius@cipherhealth.com>  Tue, 16 Apr 2013 12:42:03 +0300
+
+cipher.googlepam (1.5.1-1) precise; urgency=low
+
+  * New upstream version.
+
+ -- Marius Gedminas <marius@cipherhealth.com>  Thu, 11 Oct 2012 17:54:20 +0300
+
 cipher.googlepam (1.4.0-1) unstable; urgency=low
 
   * Initial release.
