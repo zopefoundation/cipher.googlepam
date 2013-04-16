@@ -20,6 +20,9 @@ The code was inspired by the ``python_pam.so`` examples and the
 ``TracGoogleAppsAuthPlugin`` trac authentication plugin.
 
 
+.. contents::
+
+
 Setting up Google PAM on Ubuntu 12.04 LTS using a PPA
 -----------------------------------------------------
 
@@ -143,13 +146,27 @@ Building a Debian package
    correct, write a changelog entry itself (e.g. something like 'New upstream
    release'.)
 
-5. Run ``debuild``.  If everything's fine, you should get a ``deb`` file in the
-   parent directory.
+5. Run ``debuild -i``.  If everything's fine, you should get a ``deb`` file in
+   the parent directory.  If not, fix whatever's wrong (e.g.
+   debian/patches/debian_specifics might need updating) and try again.
 
 Install the deb with ``sudo dpkg -i cipher.googlepam...deb; sudo apt-get -f
 install``.  Then edit ``/etc/cipher-googlepam/pam_google.conf`` and run
 ``add-google-users``.  You don't need to manually edit PAM configuration if you
 use the .deb package.
+
+
+Uploading the package to a PPA
+------------------------------
+
+1. Build a Debian package locally and test it in a virtual machine (Vagrant
+   helps here).
+
+2. Build a signed source package with ``debuild -i -S -k$GPGKEY``.
+
+3. Upload with
+   ``dput ppa:ciperhealth/ppa cipher.googlepam_VERSION-1_source.changes``.
+
 
 .. |buildstatus| image:: https://api.travis-ci.org/zopefoundation/cipher.googlepam.png?branch=master
 .. _buildstatus: https://travis-ci.org/zopefoundation/cipher.googlepam
