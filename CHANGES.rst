@@ -1,7 +1,7 @@
 CHANGES
 =======
 
-1.6.0 (unreleased)
+1.6.0 (2013-04-16)
 ------------------
 
 - Extracted a reusable helper ``cipher.googlepam.pam_google.GoogleAuth``
