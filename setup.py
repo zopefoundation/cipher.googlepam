@@ -1,6 +1,6 @@
 ##############################################################################
 #
-# Copyright (c) 2012 Zope Foundation and Contributors.
+# Copyright (c) 2013 Zope Foundation and Contributors.
 # All Rights Reserved.
 #
 # This software is subject to the provisions of the Zope Public License,
@@ -16,47 +16,46 @@
 import os
 from setuptools import setup, find_packages
 
+
 def read(*rnames):
     with open(os.path.join(os.path.dirname(__file__), *rnames)) as f:
         return f.read()
+
 
 setup(
     name='cipher.googlepam',
     version='1.5.2.dev0',
     description='Google PAM Module',
-    long_description=(
-        read('README.txt')
-        + '\n\n' +
-        read('CHANGES.txt')),
+    long_description=read('README.rst') + '\n\n' + read('CHANGES.rst'),
     classifiers=[
-      "Development Status :: 4 - Beta",
-      "Programming Language :: Python",
-      "Topic :: Internet",
-      "Topic :: Security",
-      "Topic :: System :: Systems Administration :: Authentication/Directory"
-      ],
+        "Development Status :: 4 - Beta",
+        "Programming Language :: Python",
+        "Topic :: Internet",
+        "Topic :: Security",
+        "Topic :: System :: Systems Administration :: Authentication/Directory",
+    ],
     author='Stephan Richter',
-    author_email = "stephan.richter@gmail.com",
+    author_email="stephan.richter@gmail.com",
     url='http://pypi.python.org/pypi/cipher.googlepam',
     keywords='pam google',
-    packages = find_packages('src'),
-    package_dir = {'': 'src'},
-    namespace_packages = ['cipher'],
+    packages=find_packages('src'),
+    package_dir={'': 'src'},
+    namespace_packages=['cipher'],
     include_package_data=True,
     zip_safe=False,
-    extras_require = dict(
-        test = (
+    extras_require=dict(
+        test=[
             'zope.testing',
-            ),
-        ),
+        ],
+    ),
     install_requires=[
-          'gdata',
-          'py-bcrypt',
-          'python-memcached',
-          'setuptools',
-          ],
+        'gdata',
+        'py-bcrypt',
+        'python-memcached',
+        'setuptools',
+    ],
     entry_points = """
     [console_scripts]
     add-google-users=cipher.googlepam.addusers:main
-    """
-    )
+    """,
+)
