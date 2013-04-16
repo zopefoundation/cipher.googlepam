@@ -1,10 +1,12 @@
 CHANGES
 =======
 
-1.5.2 (unreleased)
+1.6.0 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Extracted a reusable helper ``cipher.googlepam.pam_google.GoogleAuth``
+  that you can use to implement Google authentication in applications that do
+  not use PAM.
 
 
 1.5.1 (2012-10-11)

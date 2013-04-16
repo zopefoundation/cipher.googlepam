@@ -291,7 +291,6 @@ class GooglePAM(GoogleAuthBase):
             if self.pamh.user in excluded:
                 LOG.info('User is in excluded list: %s', self.pamh.user)
                 return self.pamh.PAM_IGNORE
-
         # 1. Get the password.
         if self.pamh.authtok == None:
             LOG.debug('No auth token was found. Starting conversation.')
@@ -356,7 +355,25 @@ class GooglePAM(GoogleAuthBase):
 
 
 class GoogleAuth(GoogleAuthBase):
-    """Check Google passwords given a config file"""
+    """Check Google passwords given a config file.
+
+    Useful if you want to use Google authentication in a Python application
+    that doesn't use PAM.
+
+    The configuration file has the same format as pam_google.conf, except the
+    logging and caching sections are not used.
+
+    Example::
+
+        auth = GoogleAuth('/etc/myapp/googlepam.conf')
+        if (auth.checkGroups(username) and
+            auth.checkPassword(username, password)):
+            ...LOGIN SUCCESSFUL...
+        else:
+            ...LOGIN FAILED...
+
+    """
+
     def __init__(self, config_file):
         self.config = self._readConfig(config_file)
 
