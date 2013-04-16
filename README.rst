@@ -1,6 +1,8 @@
 Google PAM Module
 =================
 
+|buildstatus|_
+
 This package implements a Python PAM module to authenticate users against a
 Google domain. The following features are provided:
 
@@ -128,3 +130,5 @@ install``.  Then edit ``/etc/cipher-googlepam/pam_google.conf`` and run
 ``add-google-users``.  You don't need to manually edit PAM configuration if you
 use the .deb package.
 
+.. |buildstatus| image:: https://api.travis-ci.org/zopefoundation/cipher.googlepam.png?branch=master
+.. _buildstatus: https://travis-ci.org/zopefoundation/cipher.googlepam
