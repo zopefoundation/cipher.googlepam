@@ -3,7 +3,7 @@ Google PAM Module
 
 |buildstatus|_
 
-This package implements a Python PAM module to authenticate users against a
+This package implements a PAM module to authenticate users against a
 Google domain. The following features are provided:
 
 - Select any Google domain.
@@ -20,8 +20,29 @@ The code was inspired by the ``python_pam.so`` examples and the
 ``TracGoogleAppsAuthPlugin`` trac authentication plugin.
 
 
-Configuring Google PAM on Ubuntu 12.04 LTS
-------------------------------------------
+Setting up Google PAM on Ubuntu 12.04 LTS using a PPA
+-----------------------------------------------------
+
+1. Add the CipherHealth PPA::
+
+     # add-apt-repository ppa:cipherhealth/ppa
+     # apt-get update
+
+2. Install the package ::
+
+     # apt-get install cipher.googlepam
+
+3. Edit ``/etc/cipher-googlepam/pam_google.conf`` and specify your Google
+   domain and admin credentials.  You can also limit logins to members of
+   one or more Google groups.
+
+4. Create system accounts for Google domain users by running ::
+
+     # add-google-users
+
+
+Configuring Google PAM on Ubuntu 12.04 LTS manually
+---------------------------------------------------
 
 1. Install a few required packages::
 
