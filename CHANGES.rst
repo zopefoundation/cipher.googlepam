@@ -1,7 +1,7 @@
 Changelog
 =========
 
-1.7.0 (unreleased)
+1.7.0 (2016-10-21)
 ------------------
 
 - Remove all the code because it is now totally broken
