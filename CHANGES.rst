@@ -1,10 +1,11 @@
 Changelog
 =========
 
-1.6.1 (unreleased)
+1.7.0 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Remove all the code because it is now totally broken
+  (https://github.com/zopefoundation/cipher.googlepam/issues/1).
 
 
 1.6.0 (2013-04-16)

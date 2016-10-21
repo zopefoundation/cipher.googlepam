@@ -1,1 +1,0 @@
-extend-diff-ignore = "(^|/)(setup\.cfg|dist/.*|build/.*|bin/.*|parts/.*|eggs/.*|develop-eggs/.*|\.installed\.cfg|src/cipher\.googlepam\.egg-info/.*|PKG-INFO|Makefile\.deb)$"
