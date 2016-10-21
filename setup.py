@@ -17,15 +17,6 @@ import os
 from setuptools import setup, find_packages
 
 
-raise NotImplementedError("""
-
-This package no longer works!  It reportedly allows ANYONE to authenticate with
-ANY PASSWORD, see https://github.com/zopefoundation/cipher.googlepam/issues/1
-for more details.
-
-""")
-
-
 def read(*rnames):
     with open(os.path.join(os.path.dirname(__file__), *rnames)) as f:
         return f.read()
@@ -33,8 +24,8 @@ def read(*rnames):
 
 setup(
     name='cipher.googlepam',
-    version='1.6.1.dev0',
-    description='Google PAM Module',
+    version='1.7.0',
+    description='Google PAM Module (defunct)',
     long_description=read('README.rst') + '\n\n' + read('CHANGES.rst'),
     classifiers=[
         "Development Status :: 4 - Beta",
@@ -47,24 +38,11 @@ setup(
     author_email="stephan.richter@gmail.com",
     url='http://pypi.python.org/pypi/cipher.googlepam',
     keywords='pam google',
-    packages=find_packages('src'),
-    package_dir={'': 'src'},
-    namespace_packages=['cipher'],
+    packages=[],
     include_package_data=True,
     zip_safe=False,
     extras_require=dict(
         test=[
-            'zope.testing',
         ],
     ),
-    install_requires=[
-        'gdata',
-        'py-bcrypt',
-        'python-memcached',
-        'setuptools',
-    ],
-    entry_points = """
-    [console_scripts]
-    add-google-users=cipher.googlepam.addusers:main
-    """,
 )
