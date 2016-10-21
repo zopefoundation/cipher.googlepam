@@ -17,6 +17,15 @@ import os
 from setuptools import setup, find_packages
 
 
+raise NotImplementedError("""
+
+This package no longer works!  It reportedly allows ANYONE to authenticate with
+ANY PASSWORD, see https://github.com/zopefoundation/cipher.googlepam/issues/1
+for more details.
+
+""")
+
+
 def read(*rnames):
     with open(os.path.join(os.path.dirname(__file__), *rnames)) as f:
         return f.read()
