@@ -14,3 +14,4 @@ debian/cipher-googlepam.postinst.debhelper
 debian/cipher-googlepam.prerm.debhelper
 debian/cipher-googlepam.substvars
 .pc/
+dist/
